@@ -1,9 +1,3 @@
 <template>
-  <div></div>
+  <ReservationForm />
 </template>
-
-<script>
-export default {
-  components: {},
-}
-</script>
