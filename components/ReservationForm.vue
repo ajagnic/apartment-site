@@ -1,54 +1,64 @@
 <template>
   <v-form>
     <v-row>
-      <v-col cols="3">
-        <v-text-field label="First Name" :rules="[rules.required]" />
-      </v-col>
-      <v-col cols="3">
-        <v-text-field label="Last Name" :rules="[rules.required]" />
+      <v-col>
+        <v-text-field
+          v-model="form.first"
+          label="First Name"
+          :rules="[rules.required]"
+        />
       </v-col>
       <v-col>
-        <v-text-field label="Phone Number" type="tel" />
+        <v-text-field
+          v-model="form.last"
+          label="Last Name"
+          :rules="[rules.required]"
+        />
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="5">
+      <v-col>
         <v-text-field
+          v-model="form.phone"
+          label="Phone Number"
+          type="tel"
+          :rules="[rules.required]"
+        />
+      </v-col>
+      <v-col>
+        <v-text-field
+          v-model="form.email"
           label="Email Address"
           type="email"
           :rules="[rules.required, rules.email]"
         />
       </v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <v-select
+          v-model="form.apartment"
           label="Apartment"
           :items="apartments"
           :rules="[rules.required]"
         />
       </v-col>
-      <v-col cols="2">
-        <v-select label="Guests" :items="guests" :rules="[rules.required]" />
+      <v-col>
+        <v-select
+          v-model="form.guests"
+          label="Guests"
+          :items="guests"
+          :rules="[rules.required]"
+        />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-date-picker v-model="dates" range />
+        <v-date-picker v-model="form.dates" full-width range />
       </v-col>
       <v-col>
-        <v-text-field
-          v-model="dates[0]"
-          label="Start Date"
-          type="date"
-          readonly
-        />
-      </v-col>
-      <v-col>
-        <v-text-field
-          v-model="dates[1]"
-          label="End Date"
-          type="date"
-          readonly
-        />
+        <v-text-field v-model="form.dates[0]" label="Start Date" type="date" />
+        <v-text-field v-model="form.dates[1]" label="End Date" type="date" />
       </v-col>
     </v-row>
   </v-form>
@@ -59,7 +69,15 @@ export default {
   data: () => ({
     apartments: ['Apartment #1', 'Apartment #2', 'Apartment #3'],
     guests: ['1', '2', '3', '4'],
-    dates: [],
+    form: {
+      first: '',
+      last: '',
+      phone: '',
+      email: '',
+      apartment: '',
+      guests: '',
+      dates: [],
+    },
     rules: {
       required: (v) => !!v || 'Required.',
       email: (v) => {
