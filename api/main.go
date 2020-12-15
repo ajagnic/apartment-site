@@ -7,8 +7,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello")
-
-	test := server.Test()
-	fmt.Println(test)
+	err := server.Run(":8080")
+	fmt.Println(err)
 }
