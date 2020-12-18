@@ -1,0 +1,10 @@
+FROM golang:latest
+
+ENV PORT=8080
+
+WORKDIR /app
+COPY . .
+
+RUN go build main.go
+
+CMD [ "./main" ]
