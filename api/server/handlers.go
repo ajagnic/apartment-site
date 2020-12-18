@@ -1,11 +1,13 @@
 package server
 
-import "net/http"
+import (
+	"net/http"
+)
 
-func index(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		w.Write([]byte("hello"))
-	} else {
-		http.Error(w, "Invalid method.", http.StatusMethodNotAllowed)
+func pingHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed.", http.StatusMethodNotAllowed)
+		return
 	}
+	w.Write([]byte("Server OK"))
 }
