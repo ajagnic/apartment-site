@@ -32,11 +32,6 @@ func awaitShutdown(s *http.Server) error {
 	signal.Notify(sigint, os.Interrupt)
 	// Wait for signal, then gracefully shutdown server.
 	<-sigint
-	err := shutdown(s)
-	return err
-}
-
-func shutdown(s *http.Server) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	err := s.Shutdown(ctx)
