@@ -11,29 +11,29 @@ import (
 
 //Run registers route handlers and starts listening.
 func Run(addr string) error {
-	registerHandlers()
-	s := createServer(addr)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", pingHandler)
 
+	s := createServer(addr, mux)
 	go listen(s)
-	err := shutdownListener(s)
+	err := awaitShutdown(s)
 	return err
-}
-
-func registerHandlers() {
-	http.HandleFunc("/", index)
 }
 
 func listen(s *http.Server) {
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("server:listen: %v", err)
+		// Server encountered unexpected error, exit.
+		log.Fatalf("server:listen:ListenAndServe: %v", err)
 	}
 }
 
-func shutdownListener(s *http.Server) error {
+func awaitShutdown(s *http.Server) error {
 	sigint := make(chan os.Signal, 1)
 	signal.Notify(sigint, os.Interrupt)
+	// Wait for signal, then gracefully shutdown server.
 	<-sigint
-	return shutdown(s)
+	err := shutdown(s)
+	return err
 }
 
 func shutdown(s *http.Server) error {
@@ -43,8 +43,9 @@ func shutdown(s *http.Server) error {
 	return err
 }
 
-func createServer(addr string) *http.Server {
+func createServer(addr string, mux *http.ServeMux) *http.Server {
 	return &http.Server{
-		Addr: addr,
+		Addr:    addr,
+		Handler: mux,
 	}
 }
