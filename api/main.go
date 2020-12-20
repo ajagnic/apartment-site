@@ -8,10 +8,12 @@ import (
 )
 
 func main() {
+	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
+	addr := host + ":" + port
 
-	log.Printf("Starting server on %s", port)
-	err := server.Run(port)
+	log.Printf("Starting server on %s", addr)
+	err := server.Run(addr)
 	if err != nil {
 		log.Printf("Server error: %v", err)
 	}

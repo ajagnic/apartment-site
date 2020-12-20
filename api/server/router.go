@@ -23,7 +23,7 @@ func Run(addr string) error {
 func listen(s *http.Server) {
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
 		// Server encountered unexpected error, exit.
-		log.Fatalf("server:listen:ListenAndServe: %v", err)
+		log.Fatalf("server: listen: ListenAndServe: %v", err)
 	}
 }
 
