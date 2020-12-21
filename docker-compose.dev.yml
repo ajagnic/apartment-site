@@ -7,10 +7,10 @@ services:
       - ./api:/app
     working_dir: /app
     environment: 
-      HOST: 0.0.0.0
-      PORT: 8080
+      HOST: ${API_HOST}
+      PORT: ${API_PORT}
     ports: 
-      - "8080:8080"
+      - "${API_LOCALPORT}:${API_PORT}"
     command: go run main.go
 
   site:
@@ -19,9 +19,9 @@ services:
       - ./site:/app
     working_dir: /app
     environment: 
-      HOST: 0.0.0.0
+      HOST: ${HOST}
     ports: 
-      - "3000:3000"
+      - "${LOCALPORT}:3000"
     command: >
       bash -c "yarn install
       && yarn dev"
