@@ -20,8 +20,9 @@ services:
     working_dir: /app
     environment: 
       HOST: ${HOST}
+      PORT: ${PORT}
     ports: 
-      - "${LOCALPORT}:3000"
+      - "${LOCALPORT}:${PORT}"
     command: >
       bash -c "yarn install
       && yarn dev"
