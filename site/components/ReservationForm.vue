@@ -43,6 +43,9 @@
         </v-row>
       </v-form>
     </v-card-text>
+    <v-card-actions>
+      <v-btn @click="submitReservation">Submit</v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -68,5 +71,11 @@ export default {
       dates: [],
     },
   }),
+
+  methods: {
+    submitReservation() {
+      this.$axios.post('/', this.form)
+    },
+  },
 }
 </script>
