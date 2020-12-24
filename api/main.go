@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	host := os.Getenv("HOST")
-	port := os.Getenv("PORT")
+	host := os.Getenv("API_HOST")
+	port := os.Getenv("API_PORT")
 	addr := host + ":" + port
 
 	log.Printf("Starting server on %s", addr)

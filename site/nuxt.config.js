@@ -42,6 +42,13 @@ export default {
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {},
 
+  privateRuntimeConfig: {
+    axios: {
+      host: process.env.API_HOST,
+      port: process.env.API_PORT,
+    },
+  },
+
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
     customVariables: ['~/assets/variables.scss'],

@@ -6,11 +6,9 @@ services:
     volumes:
       - ./api:/app
     working_dir: /app
-    environment: 
-      HOST: ${API_HOST}
-      PORT: ${API_PORT}
+    env_file: .env
     ports: 
-      - "${API_LOCALPORT}:${API_PORT}"
+      - "${API_PORT}:${API_PORT}"
     command: go run main.go
 
   site:
@@ -18,11 +16,9 @@ services:
     volumes: 
       - ./site:/app
     working_dir: /app
-    environment: 
-      HOST: ${HOST}
-      PORT: ${PORT}
+    env_file: .env
     ports: 
-      - "${LOCALPORT}:${PORT}"
+      - "${PORT}:${PORT}"
     command: >
       bash -c "yarn install
       && yarn dev"
