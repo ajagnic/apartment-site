@@ -2,7 +2,7 @@
   <v-card max-width="800">
     <v-card-title>Reservation Form</v-card-title>
     <v-card-text>
-      <v-form>
+      <v-form v-model="valid">
         <v-text-field
           v-model="form.first"
           label="First Name"
@@ -44,7 +44,9 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn @click="submitReservation">Submit</v-btn>
+      <v-btn :disabled="!valid" @click="submitReservation">
+        Create Reservation
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -52,6 +54,7 @@
 <script>
 export default {
   data: () => ({
+    valid: false,
     apartments: ['Apartment #1', 'Apartment #2', 'Apartment #3'],
     guests: ['1', '2', '3', '4'],
     rules: {
@@ -74,7 +77,7 @@ export default {
 
   methods: {
     submitReservation() {
-      this.$axios.post('/', this.form)
+      this.$axios.post('/reservations', this.form)
     },
   },
 }
