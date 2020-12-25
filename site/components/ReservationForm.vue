@@ -37,8 +37,18 @@
             <v-date-picker v-model="form.dates" range />
           </v-col>
           <v-col>
-            <v-text-field v-model="form.dates[0]" label="Start Date" readonly />
-            <v-text-field v-model="form.dates[1]" label="End Date" readonly />
+            <v-text-field
+              v-model="form.dates[0]"
+              label="Start Date"
+              :rules="[rules.required]"
+              readonly
+            />
+            <v-text-field
+              v-model="form.dates[1]"
+              label="End Date"
+              :rules="[rules.required]"
+              readonly
+            />
           </v-col>
         </v-row>
       </v-form>
