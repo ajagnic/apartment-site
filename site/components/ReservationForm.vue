@@ -34,7 +34,7 @@
         />
         <v-row>
           <v-col>
-            <v-date-picker v-model="form.dates" range />
+            <v-date-picker v-model="form.dates" range @change="orderDates" />
           </v-col>
           <v-col>
             <v-text-field
@@ -88,6 +88,18 @@ export default {
   methods: {
     submitReservation() {
       this.$axios.post('/reservations', this.form)
+    },
+
+    orderDates() {
+      const s1 = this.form.dates[0]
+      const s2 = this.form.dates[1]
+      const a1 = s1.split('-')
+      const a2 = s2.split('-')
+      const d1 = Date.UTC(a1[0], a1[1], a1[2])
+      const d2 = Date.UTC(a2[0], a2[1], a2[2])
+      if (d2 < d1) {
+        this.form.dates = [s2, s1]
+      }
     },
   },
 }
