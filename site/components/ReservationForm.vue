@@ -91,14 +91,13 @@ export default {
     },
 
     orderDates() {
-      const s1 = this.form.dates[0]
-      const s2 = this.form.dates[1]
-      const a1 = s1.split('-')
-      const a2 = s2.split('-')
-      const d1 = Date.UTC(a1[0], a1[1], a1[2])
-      const d2 = Date.UTC(a2[0], a2[1], a2[2])
-      if (d2 < d1) {
-        this.form.dates = [s2, s1]
+      const splitDates = this.form.dates.map((x) => x.split('-'))
+      const first = splitDates[0]
+      const second = splitDates[1]
+      const firstUTC = Date.UTC(first[0], first[1], first[2])
+      const secondUTC = Date.UTC(second[0], second[1], second[2])
+      if (secondUTC < firstUTC) {
+        this.form.dates.reverse()
       }
     },
   },
