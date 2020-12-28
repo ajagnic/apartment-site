@@ -87,7 +87,19 @@ export default {
 
   methods: {
     submitReservation() {
-      this.$axios.post('/reservations', this.form)
+      const userForm = this.form
+      userForm.start = userForm.dates[0]
+      userForm.end = userForm.dates[1]
+      userForm.name = userForm.first.concat(' ', userForm.last)
+      userForm.reservationDate = new Date().toDateString()
+      this.$axios.post('/reservations', this.form).then(
+        (response) => {
+          // console.log(resp)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
     },
 
     orderDates() {
