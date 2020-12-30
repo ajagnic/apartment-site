@@ -12,7 +12,7 @@ import (
 //Run registers route handlers and starts listening.
 func Run(addr string) error {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", pingHandler)
+	mux.HandleFunc("/reservations", reservationHandler)
 
 	s := createServer(addr, mux)
 	go listen(s)
