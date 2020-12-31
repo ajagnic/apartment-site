@@ -2,7 +2,7 @@
   <v-card max-width="800">
     <v-card-title>Reservation Form</v-card-title>
     <v-card-text>
-      <v-form>
+      <v-form v-model="valid">
         <v-text-field
           v-model="form.first"
           label="First Name"
@@ -34,21 +34,37 @@
         />
         <v-row>
           <v-col>
-            <v-date-picker v-model="form.dates" range />
+            <v-date-picker v-model="form.dates" range @change="orderDates" />
           </v-col>
           <v-col>
-            <v-text-field v-model="form.dates[0]" label="Start Date" readonly />
-            <v-text-field v-model="form.dates[1]" label="End Date" readonly />
+            <v-text-field
+              v-model="form.dates[0]"
+              label="Start Date"
+              :rules="[rules.required]"
+              readonly
+            />
+            <v-text-field
+              v-model="form.dates[1]"
+              label="End Date"
+              :rules="[rules.required]"
+              readonly
+            />
           </v-col>
         </v-row>
       </v-form>
     </v-card-text>
+    <v-card-actions>
+      <v-btn :disabled="!valid" @click="submitReservation">
+        Create Reservation
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
 <script>
 export default {
   data: () => ({
+    valid: false,
     apartments: ['Apartment #1', 'Apartment #2', 'Apartment #3'],
     guests: ['1', '2', '3', '4'],
     rules: {
@@ -68,5 +84,34 @@ export default {
       dates: [],
     },
   }),
+
+  methods: {
+    submitReservation() {
+      const userForm = this.form
+      userForm.start = userForm.dates[0]
+      userForm.end = userForm.dates[1]
+      userForm.name = userForm.first.concat(' ', userForm.last)
+      userForm.reservationDate = new Date().toDateString()
+      this.$axios.post('/reservations', this.form).then(
+        (response) => {
+          // console.log(resp)
+        },
+        (error) => {
+          console.log(error)
+        }
+      )
+    },
+
+    orderDates() {
+      const splitDates = this.form.dates.map((x) => x.split('-'))
+      const first = splitDates[0]
+      const second = splitDates[1]
+      const firstUTC = Date.UTC(first[0], first[1], first[2])
+      const secondUTC = Date.UTC(second[0], second[1], second[2])
+      if (secondUTC < firstUTC) {
+        this.form.dates.reverse()
+      }
+    },
+  },
 }
 </script>
