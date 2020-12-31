@@ -2,29 +2,27 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
 func reservationHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+
 	if r.Method == http.MethodOptions {
 		w.Header().Add("Access-Control-Allow-Headers", "*")
-		w.Header().Add("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusOK)
 	} else {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			fmt.Printf("%v", err)
+			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 		}
-		var jsonRequest Reservation
-		err = json.Unmarshal(b, &jsonRequest)
+		var request Reservation
+		err = json.Unmarshal(b, &request)
 		if err != nil {
-			fmt.Printf("jsonErr:%v", err)
+			http.Error(w, "Invalid JSON.", http.StatusInternalServerError)
 		}
-		fmt.Printf("json: %v\n", jsonRequest)
+		w.WriteHeader(http.StatusAccepted)
 	}
 	w.Write([]byte("OK"))
 }
