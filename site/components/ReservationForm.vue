@@ -58,12 +58,18 @@
         Create Reservation
       </v-btn>
     </v-card-actions>
+    <v-overlay v-if="error" z-index="1" absolute>
+      <v-alert prominent dismissible type="error" @click="error = null">
+        There was an error creating your reservation. ({{ error }})
+      </v-alert>
+    </v-overlay>
   </v-card>
 </template>
 
 <script>
 export default {
   data: () => ({
+    error: null,
     valid: false,
     apartments: ['Apartment #1', 'Apartment #2', 'Apartment #3'],
     guests: ['1', '2', '3', '4'],
@@ -94,10 +100,10 @@ export default {
       userForm.reservationDate = new Date().toDateString()
       this.$axios.post('/reservations', this.form).then(
         (response) => {
-          // console.log(resp)
+          this.$router.push('/success')
         },
         (error) => {
-          console.log(error)
+          this.error = error
         }
       )
     },
