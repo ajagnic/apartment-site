@@ -98,11 +98,14 @@ export default {
       userForm.end = userForm.dates[1]
       userForm.name = userForm.first.concat(' ', userForm.last)
       userForm.reservationDate = new Date().toDateString()
+      this.$nuxt.$loading.start()
       this.$axios.post('/reservations', this.form).then(
         (response) => {
-          this.$router.push('/success')
+          this.$nuxt.$loading.finish()
+          this.$router.push('/')
         },
         (error) => {
+          this.$nuxt.$loading.finish()
           this.error = error
         }
       )
