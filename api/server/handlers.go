@@ -1,9 +1,10 @@
 package server
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/ajagnic/apartment-site/db"
 )
 
 func reservationHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,11 +17,12 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
+			return
 		}
-		var request Reservation
-		err = json.Unmarshal(b, &request)
+		err = db.Insert(b)
 		if err != nil {
-			http.Error(w, "Invalid JSON.", http.StatusInternalServerError)
+			http.Error(w, "Error saving new record.", http.StatusInternalServerError)
+			return
 		}
 		w.WriteHeader(http.StatusAccepted)
 	}

@@ -1,4 +1,4 @@
-package server
+package db
 
 // Reservation represents the form submitted by the ReservationForm component.
 type Reservation struct {
@@ -9,5 +9,5 @@ type Reservation struct {
 	Guests    string
 	Start     string
 	End       string
-	Date      string `json:"reservationDate"`
+	Date      string `bson:"reservationDate"`
 }

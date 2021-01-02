@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 
 var (
 	client *mongo.Client
+	coll   *mongo.Collection
 )
 
 // Connect attempts to connect to the mongodb instance.
@@ -24,6 +26,10 @@ func Connect(user, pw string) (err error) {
 		return
 	}
 	err = ping(ctx)
+	if err != nil {
+		return
+	}
+	coll = client.Database("apartments").Collection("reservations")
 	return
 }
 
@@ -34,6 +40,22 @@ func Disconnect() {
 	if err := client.Disconnect(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// Insert stores a record (as db.Reservation).
+func Insert(request []byte) error {
+	var record Reservation
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := json.Unmarshal(request, &record)
+	if err != nil {
+		return err
+	}
+	_, err = coll.InsertOne(ctx, record)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func ping(ctx context.Context) (err error) {
