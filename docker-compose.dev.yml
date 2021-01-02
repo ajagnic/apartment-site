@@ -7,6 +7,8 @@ services:
       - ./api:/app
     working_dir: /app
     env_file: .env
+    networks: 
+      - backend
     ports: 
       - "${API_PORT}:${API_PORT}"
     command: go run main.go
@@ -22,3 +24,17 @@ services:
     command: >
       bash -c "yarn install
       && yarn dev"
+
+  mongodb:
+    image: mongo:latest
+    volumes: 
+      - mongodb:/data/db
+    env_file: .env
+    networks: 
+      - backend
+
+volumes: 
+  mongodb:
+
+networks: 
+  backend:
