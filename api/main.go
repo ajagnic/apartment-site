@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/ajagnic/apartment-site/db"
 	"github.com/ajagnic/apartment-site/server"
 )
 
