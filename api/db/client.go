@@ -13,12 +13,12 @@ import (
 
 var (
 	client *mongo.Client
-	coll   *mongo.Collection
+	dbm    *mongo.Database
 )
 
 // Connect attempts to connect to the mongodb instance.
-func Connect(user, pw string) (err error) {
-	uri := fmt.Sprintf("mongodb://%s:%s@mongodb:27017", user, pw)
+func Connect(host, db, user, pw string) (err error) {
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", user, pw, host)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
@@ -29,7 +29,7 @@ func Connect(user, pw string) (err error) {
 	if err != nil {
 		return
 	}
-	coll = client.Database("apartments").Collection("reservations")
+	dbm = client.Database(db)
 	return
 }
 
@@ -43,8 +43,9 @@ func Disconnect() {
 }
 
 // Insert stores a record (as db.Reservation).
-func Insert(request []byte) error {
+func Insert(table string, request []byte) error {
 	var record Reservation
+	coll := dbm.Collection(table)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err := json.Unmarshal(request, &record)

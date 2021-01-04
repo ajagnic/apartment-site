@@ -8,16 +8,21 @@ import (
 	"github.com/ajagnic/apartment-site/server"
 )
 
+var (
+	user   = os.Getenv("MONGO_INITDB_ROOT_USERNAME")
+	pw     = os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
+	dbName = os.Getenv("MONGO_INITDB_DATABASE")
+	dbHost = os.Getenv("MONGO_DOMAIN_NAME")
+	host   = os.Getenv("API_HOST")
+	port   = os.Getenv("API_PORT")
+)
+
 func main() {
-	user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
-	pw := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
-	err := db.Connect(user, pw)
+	err := db.Connect(dbHost, dbName, user, pw)
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v\n", err)
 	}
 
-	host := os.Getenv("API_HOST")
-	port := os.Getenv("API_PORT")
 	addr := host + ":" + port
 
 	log.Printf("Starting server on %s\n", addr)

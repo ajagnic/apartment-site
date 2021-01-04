@@ -19,7 +19,7 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 			return
 		}
-		err = db.Insert(b)
+		err = db.Insert("reservations", b)
 		if err != nil {
 			http.Error(w, "Error saving new record.", http.StatusInternalServerError)
 			return
