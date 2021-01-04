@@ -34,7 +34,12 @@
         />
         <v-row>
           <v-col>
-            <v-date-picker v-model="form.dates" range @change="orderDates" />
+            <v-date-picker
+              v-model="form.dates"
+              :allowed-dates="allowedDates"
+              range
+              @change="orderDates"
+            />
           </v-col>
           <v-col>
             <v-text-field
@@ -68,6 +73,11 @@
 
 <script>
 export default {
+  async fetch() {
+    const dates = await this.$axios.$get('/reservations')
+    this.reservedDates = dates
+  },
+
   data: () => ({
     error: null,
     valid: false,
@@ -89,6 +99,7 @@ export default {
       guests: '',
       dates: [],
     },
+    reservedDates: ['2021-01-20', '2021-01-21', '2021-01-22'],
   }),
 
   methods: {
@@ -109,6 +120,10 @@ export default {
           this.error = error
         }
       )
+    },
+
+    allowedDates(val) {
+      return !this.reservedDates.includes(val)
     },
 
     orderDates() {
