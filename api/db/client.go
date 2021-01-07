@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -57,6 +58,38 @@ func Insert(table string, request []byte) error {
 		return err
 	}
 	return nil
+}
+
+// CollectDates returns all reserved dates as a single list.
+func CollectDates(table string) ([]byte, error) {
+	filter := bson.D{}
+	opts := options.Find().SetProjection(bson.M{"dates": 1})
+	coll := dbm.Collection(table)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cur, err := coll.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	var results []Result
+	if err = cur.All(ctx, &results); err != nil {
+		return nil, err
+	}
+	dates := sliceDates(results)
+	b, err := json.Marshal(dates)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+func sliceDates(recs []Result) (list []string) {
+	for i := range recs {
+		for _, val := range recs[i].Dates {
+			list = append(list, val)
+		}
+	}
+	return
 }
 
 func ping(ctx context.Context) (err error) {
