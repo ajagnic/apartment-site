@@ -2,7 +2,7 @@
   <v-card max-width="800">
     <v-card-title>Reservation Form</v-card-title>
     <v-card-text>
-      <v-form v-model="valid">
+      <v-form ref="form" v-model="valid">
         <v-text-field
           v-model="form.first"
           label="First Name"
@@ -32,25 +32,11 @@
           :items="guests"
           :rules="[rules.required]"
         />
-        <v-row>
-          <v-col>
-            <v-date-picker v-model="form.dates" range @change="orderDates" />
-          </v-col>
-          <v-col>
-            <v-text-field
-              v-model="form.dates[0]"
-              label="Start Date"
-              :rules="[rules.required]"
-              readonly
-            />
-            <v-text-field
-              v-model="form.dates[1]"
-              label="End Date"
-              :rules="[rules.required]"
-              readonly
-            />
-          </v-col>
-        </v-row>
+        <v-date-picker
+          v-model="form.dates"
+          :allowed-dates="allowedDates"
+          multiple
+        />
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -59,9 +45,7 @@
       </v-btn>
     </v-card-actions>
     <v-overlay v-if="error" z-index="1" absolute>
-      <v-alert prominent dismissible type="error" @click="error = null">
-        There was an error creating your reservation. ({{ error }})
-      </v-alert>
+      <v-alert prominent type="error">There was an error. ):</v-alert>
     </v-overlay>
   </v-card>
 </template>
@@ -89,18 +73,29 @@ export default {
       guests: '',
       dates: [],
     },
+    reservedDates: [],
   }),
+
+  mounted() {
+    this.$axios.get('/reservations').then(
+      (response) => {
+        this.reservedDates = response.data
+      },
+      (error) => {
+        this.error = error
+      }
+    )
+  },
 
   methods: {
     submitReservation() {
       const userForm = this.form
-      userForm.start = userForm.dates[0]
-      userForm.end = userForm.dates[1]
       userForm.name = userForm.first.concat(' ', userForm.last)
       userForm.reservationDate = new Date().toDateString()
       this.$nuxt.$loading.start()
       this.$axios.post('/reservations', this.form).then(
         (response) => {
+          this.$refs.form.reset()
           this.$nuxt.$loading.finish()
           this.$router.push('/')
         },
@@ -109,6 +104,10 @@ export default {
           this.error = error
         }
       )
+    },
+
+    allowedDates(val) {
+      return !this.reservedDates.includes(val)
     },
 
     orderDates() {
