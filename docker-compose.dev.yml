@@ -35,6 +35,7 @@ services:
 
   mongo-express:
     image: mongo-express:latest
+    restart: always
     environment: 
       - ME_CONFIG_MONGODB_SERVER=${MONGO_DOMAIN_NAME}
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
