@@ -56,7 +56,7 @@ export default {
     error: null,
     valid: false,
     apartments: ['Apartment #1', 'Apartment #2', 'Apartment #3'],
-    guests: ['1', '2', '3', '4'],
+    guests: [1, 2, 3, 4],
     rules: {
       required: (v) => !!v || 'Required.',
       email: (v) => {
@@ -70,7 +70,7 @@ export default {
       phone: '',
       email: '',
       apartment: '',
-      guests: '',
+      guests: 0,
       dates: [],
     },
     reservedDates: [],
@@ -79,9 +79,13 @@ export default {
   mounted() {
     this.$axios.get('/reservations').then(
       (response) => {
-        this.reservedDates = response.data
+        const dates = response.data
+        if (dates != null) {
+          this.reservedDates = dates
+        }
       },
       (error) => {
+        this.$nuxt.$loading.finish()
         this.error = error
       }
     )
@@ -91,7 +95,7 @@ export default {
     submitReservation() {
       const userForm = this.form
       userForm.name = userForm.first.concat(' ', userForm.last)
-      userForm.reservationDate = new Date().toDateString()
+      userForm.created = new Date().toDateString()
       this.$nuxt.$loading.start()
       this.$axios.post('/reservations', this.form).then(
         (response) => {
