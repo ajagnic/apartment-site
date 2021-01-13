@@ -85,7 +85,6 @@ export default {
         }
       },
       (error) => {
-        this.$nuxt.$loading.finish()
         this.error = error
       }
     )
