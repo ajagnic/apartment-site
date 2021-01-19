@@ -25,6 +25,7 @@
           label="Apartment"
           :items="apartments"
           :rules="[rules.required]"
+          @change="filterDates"
         />
         <v-select
           v-model="form.guests"
@@ -33,7 +34,10 @@
           :rules="[rules.required]"
         />
         <v-date-picker
+          v-if="form.apartment != ''"
           v-model="form.dates"
+          :min="new Date().toISOString().substr(0, 10)"
+          :max="setMaxDate"
           :allowed-dates="allowedDates"
           multiple
         />
@@ -74,14 +78,22 @@ export default {
       dates: [],
     },
     reservedDates: [],
+    allReservedDates: {},
   }),
+
+  computed: {
+    setMaxDate() {
+      const year = new Date().getFullYear()
+      return new Date(year, 11, 31).toISOString().substr(0, 10)
+    },
+  },
 
   mounted() {
     this.$axios.get('/reservations').then(
       (response) => {
         const dates = response.data
         if (dates != null) {
-          this.reservedDates = dates
+          this.allReservedDates = dates
         }
       },
       (error) => {
@@ -107,6 +119,10 @@ export default {
           this.error = error
         }
       )
+    },
+
+    filterDates(val) {
+      this.reservedDates = this.allReservedDates[val]
     },
 
     allowedDates(val) {
