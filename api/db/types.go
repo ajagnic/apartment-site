@@ -15,5 +15,6 @@ type Reservation struct {
 
 // Result contains reserved dates for a single record, used by CollectDates.
 type Result struct {
-	Dates []string
+	Dates     []string
+	Apartment string
 }

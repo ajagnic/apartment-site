@@ -63,7 +63,7 @@ func Insert(table string, request []byte) error {
 // CollectDates returns all reserved dates as a single list.
 func CollectDates(table string) ([]byte, error) {
 	filter := bson.D{}
-	opts := options.Find().SetProjection(bson.M{"dates": 1})
+	opts := options.Find().SetProjection(bson.M{"dates": 1, "apartment": 1})
 	coll := dbm.Collection(table)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -83,13 +83,14 @@ func CollectDates(table string) ([]byte, error) {
 	return b, nil
 }
 
-func sliceDates(recs []Result) (list []string) {
-	for i := range recs {
-		for _, val := range recs[i].Dates {
-			list = append(list, val)
+func sliceDates(recs []Result) map[string][]string {
+	allDates := make(map[string][]string)
+	for _, r := range recs {
+		for _, val := range r.Dates {
+			allDates[r.Apartment] = append(allDates[r.Apartment], val)
 		}
 	}
-	return
+	return allDates
 }
 
 func ping(ctx context.Context) (err error) {
