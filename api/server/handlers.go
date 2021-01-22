@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ajagnic/apartment-site/db"
+	"github.com/ajagnic/apartment-site/email"
 )
 
 const (
@@ -33,11 +34,18 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 			return
 		}
-		err = db.Insert(reservationsTable, b)
+		id, addr, err := db.Insert(reservationsTable, b)
 		if err != nil {
 			http.Error(w, "Error saving new record.", http.StatusInternalServerError)
 			return
 		}
+
+		err = email.SendConfirmation(id, addr)
+		if err != nil {
+			http.Error(w, "Could not send confirmation email.", http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusAccepted)
 		w.Write([]byte("Reservation created."))
 
