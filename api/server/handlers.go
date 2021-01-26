@@ -2,6 +2,7 @@ package server
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/ajagnic/apartment-site/db"
@@ -11,6 +12,26 @@ import (
 const (
 	reservationsTable = "reservations"
 )
+
+func confirmationHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+
+	if r.Method == http.MethodOptions { //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		w.Header().Add("Access-Control-Allow-Headers", "*")
+		w.WriteHeader(http.StatusOK)
+
+	} else if r.Method == http.MethodPost { //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Could not read request body.", http.StatusBadRequest)
+			return
+		}
+		log.Printf("%v", string(b))
+
+	} else {
+		http.Error(w, "Invalid method.", http.StatusMethodNotAllowed)
+	}
+}
 
 func reservationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*")
