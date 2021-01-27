@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -44,20 +45,21 @@ func Disconnect() {
 }
 
 // Insert stores a record (as db.Reservation).
-func Insert(table string, request []byte) error {
+func Insert(table string, request []byte) (string, string, error) {
 	var record Reservation
 	coll := dbm.Collection(table)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err := json.Unmarshal(request, &record)
 	if err != nil {
-		return err
+		return "", "", err
 	}
-	_, err = coll.InsertOne(ctx, record)
+	res, err := coll.InsertOne(ctx, record)
 	if err != nil {
-		return err
+		return "", "", err
 	}
-	return nil
+	id := res.InsertedID.(primitive.ObjectID).Hex()
+	return id, record.Email, nil
 }
 
 // CollectDates returns all reserved dates as a single list.
