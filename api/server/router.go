@@ -13,6 +13,7 @@ import (
 func Run(addr string) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/reservations", reservationHandler)
+	mux.HandleFunc("/reservations/confirm", confirmationHandler)
 
 	s := createServer(addr, mux)
 	go listen(s)
