@@ -44,6 +44,24 @@ func Disconnect() {
 	}
 }
 
+// ConfirmReservation updates the record specified by the id parameter.
+func ConfirmReservation(table, id string) error {
+	coll := dbm.Collection(table)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"_id": objID}
+	confirm := bson.D{{Key: "$set", Value: bson.D{{Key: "confirmed", Value: true}}}}
+	_, err = coll.UpdateOne(ctx, filter, confirm)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Insert stores a record (as db.Reservation).
 func Insert(table string, request []byte) (string, string, error) {
 	var record Reservation
