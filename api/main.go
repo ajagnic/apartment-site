@@ -10,10 +10,6 @@ import (
 )
 
 var (
-	user        = os.Getenv("MONGO_INITDB_ROOT_USERNAME")
-	pw          = os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
-	dbName      = os.Getenv("MONGO_INITDB_DATABASE")
-	dbHost      = os.Getenv("MONGO_DOMAIN_NAME")
 	host        = os.Getenv("API_HOST")
 	port        = os.Getenv("API_PORT")
 	emailHost   = os.Getenv("EMAIL_HOST")
@@ -23,7 +19,7 @@ var (
 )
 
 func main() {
-	err := db.Connect(dbHost, dbName, user, pw)
+	err := db.Connect()
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v\n", err)
 	}
