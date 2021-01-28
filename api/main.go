@@ -5,17 +5,12 @@ import (
 	"os"
 
 	"github.com/ajagnic/apartment-site/db"
-	"github.com/ajagnic/apartment-site/email"
 	"github.com/ajagnic/apartment-site/server"
 )
 
 var (
-	host        = os.Getenv("API_HOST")
-	port        = os.Getenv("API_PORT")
-	emailHost   = os.Getenv("EMAIL_HOST")
-	emailPort   = os.Getenv("EMAIL_PORT")
-	emailSender = os.Getenv("EMAIL_SENDER_ADDR")
-	emailPW     = os.Getenv("EMAIL_SENDER_PW")
+	host = os.Getenv("API_HOST")
+	port = os.Getenv("API_PORT")
 )
 
 func main() {
@@ -23,8 +18,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v\n", err)
 	}
-
-	email.Initialize(emailHost, emailPort, emailSender, emailPW)
 
 	addr := host + ":" + port
 

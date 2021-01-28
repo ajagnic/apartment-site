@@ -2,26 +2,27 @@ package email
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"net/smtp"
+	"os"
 )
 
 var (
-	auth smtp.Auth
-	addr string
-	from string
+	host, port, from, pw, addr string
+	linkURL                    string
+	auth                       smtp.Auth
 )
 
-// TemplateData stores values to be injected into HTML.
-type TemplateData struct {
-	URL string
-}
-
-// Initialize authentication values for the smtp client.
-func Initialize(host, port, sender, password string) {
-	from = sender
+func init() {
+	host = os.Getenv("EMAIL_HOST")
+	port = os.Getenv("EMAIL_PORT")
+	from = os.Getenv("EMAIL_SENDER_ADDR")
+	pw = os.Getenv("EMAIL_SENDER_PW")
+	domain := os.Getenv("SITE_DOMAIN")
+	linkURL = fmt.Sprintf("http://%s/confirmation?id=", domain)
 	addr = host + ":" + port
-	auth = smtp.PlainAuth("", sender, password, host)
+	auth = smtp.PlainAuth("", from, pw, host)
 }
 
 // SendConfirmation emails a confirmation link to the recipient.
@@ -43,7 +44,7 @@ func generateEmailBody(id string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	url := "http://localhost:3000/confirmation?id=" + id
-	t.Execute(&body, TemplateData{url})
+	url := linkURL + id
+	t.Execute(&body, struct{ URL string }{url})
 	return body.Bytes(), nil
 }
