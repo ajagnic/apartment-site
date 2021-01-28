@@ -2,7 +2,6 @@ package server
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/ajagnic/apartment-site/db"
@@ -26,7 +25,13 @@ func confirmationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 			return
 		}
-		log.Printf("%v", string(b))
+		err = db.ConfirmReservation(reservationsTable, string(b))
+		if err != nil {
+			http.Error(w, "Could not confirm reservation.", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte("Reservation confirmed."))
 
 	} else {
 		http.Error(w, "Invalid method.", http.StatusMethodNotAllowed)
@@ -66,7 +71,6 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not send confirmation email.", http.StatusInternalServerError)
 			return
 		}
-
 		w.WriteHeader(http.StatusAccepted)
 		w.Write([]byte("Reservation created."))
 
