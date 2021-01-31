@@ -78,7 +78,11 @@ export default {
       dates: [],
     },
     reservedDates: [],
-    allReservedDates: {},
+    allReservedDates: {
+      'Apartment #1': [],
+      'Apartment #2': [],
+      'Apartment #3': [],
+    },
   }),
 
   computed: {
@@ -93,7 +97,9 @@ export default {
       (response) => {
         const dates = response.data
         if (dates != null) {
-          this.allReservedDates = dates
+          for (const key in dates) {
+            this.allReservedDates[key] = dates[key]
+          }
         }
       },
       (error) => {

@@ -102,7 +102,7 @@ func CollectDates() ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	coll := dbm.Collection(table)
-	filter := bson.D{}
+	filter := bson.D{{Key: "confirmed", Value: true}}
 	opts := options.Find().SetProjection(bson.M{"dates": 1, "apartment": 1})
 	cur, err := coll.Find(ctx, filter, opts)
 	if err != nil {
