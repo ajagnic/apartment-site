@@ -1,6 +1,6 @@
 package db
 
-// Reservation represents the form submitted by the ReservationForm component.
+// Reservation represents the data model for the application table.
 type Reservation struct {
 	Name      string
 	Phone     string

@@ -1,3 +1,4 @@
+// Package server registers route handlers and runs an http server.
 package server
 
 import (
@@ -9,8 +10,18 @@ import (
 	"time"
 )
 
-//Run registers route handlers and starts listening.
-func Run(addr string) error {
+var (
+	host, port, addr string
+)
+
+func init() {
+	host = os.Getenv("API_HOST")
+	port = os.Getenv("API_PORT")
+	addr = host + ":" + port
+}
+
+//Run starts the server in a goroutine and waits for a shutdown signal. (blocking)
+func Run() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/reservations", reservationHandler)
 	mux.HandleFunc("/reservations/confirm", confirmationHandler)

@@ -8,10 +8,6 @@ import (
 	"github.com/ajagnic/apartment-site/email"
 )
 
-const (
-	reservationsTable = "reservations"
-)
-
 func confirmationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 
@@ -25,7 +21,7 @@ func confirmationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 			return
 		}
-		err = db.ConfirmReservation(reservationsTable, string(b))
+		err = db.SetBoolean(string(b), "confirmed", true)
 		if err != nil {
 			http.Error(w, "Could not confirm reservation.", http.StatusInternalServerError)
 			return
@@ -46,7 +42,7 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 	} else if r.Method == http.MethodGet { //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		b, err := db.CollectDates(reservationsTable)
+		b, err := db.CollectDates()
 		if err != nil {
 			http.Error(w, "Error retrieving records.", http.StatusInternalServerError)
 			return
@@ -60,12 +56,11 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 			return
 		}
-		id, addr, err := db.Insert(reservationsTable, b)
+		id, addr, err := db.Insert(b)
 		if err != nil {
 			http.Error(w, "Error saving new record.", http.StatusInternalServerError)
 			return
 		}
-
 		err = email.SendConfirmation(id, addr)
 		if err != nil {
 			http.Error(w, "Could not send confirmation email.", http.StatusInternalServerError)
