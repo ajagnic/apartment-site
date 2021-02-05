@@ -42,8 +42,8 @@
           range
           @change="orderDates"
         />
-        <v-text-field v-model="pickerDates[0]" label="Start" />
-        <v-text-field v-model="pickerDates[1]" label="End" />
+        <v-text-field v-model="pickerDates[0]" label="Start" readonly />
+        <v-text-field v-model="pickerDates[1]" label="End" readonly />
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -114,6 +114,7 @@ export default {
 
   methods: {
     submitReservation() {
+      this.fillDates()
       const userForm = this.form
       userForm.name = userForm.first.concat(' ', userForm.last)
       userForm.created = new Date().toDateString()
@@ -146,27 +147,19 @@ export default {
       if (secondUTC < firstUTC) {
         this.pickerDates.reverse()
       }
-      this.fillDates()
     },
 
     fillDates() {
-      const dates = ['2021-02-27', '2021-03-03']
-      let [first, last] = dates.map((x) => x.split('-'))
-      first = first.map((x) => parseInt(x))
-      last = last.map((x) => parseInt(x))
-      let startStr = new Date(first[0], first[1] - 1, first[2])
-        .toISOString()
-        .substr(0, 10)
-      const endStr = new Date(last[0], last[1] - 1, last[2])
-        .toISOString()
-        .substr(0, 10)
+      const endISO = this.pickerDates[1]
+      let dateISO = this.pickerDates[0]
+      let start = dateISO.split('-')
+      start = start.map((x) => parseInt(x))
+      const [y, m, d] = [start[0], start[1] - 1, start[2]]
       let cntr = 0
-      while (startStr !== endStr) {
-        startStr = new Date(first[0], first[1] - 1, first[2] + cntr)
-          .toISOString()
-          .substr(0, 10)
+      while (dateISO !== endISO) {
+        dateISO = new Date(y, m, d + cntr).toISOString().substr(0, 10)
+        this.form.dates.push(dateISO)
         cntr++
-        console.log(startStr)
       }
     },
   },
