@@ -13,7 +13,7 @@
 - [mongo-go-driver](https://github.com/mongodb/mongo-go-driver)
 
 ## Usage
-### Build Site
+### Front-End Only
 ```bash
 # navigate to site sub-directory
 $ cd site/
@@ -25,7 +25,7 @@ $ yarn install
 $ yarn dev
 ```
 
-### Docker Compose
+### Run Whole Project with Docker
 ```bash
 # create env variables from example file
 $ cp .env.example .env
