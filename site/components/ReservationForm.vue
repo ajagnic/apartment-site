@@ -35,12 +35,15 @@
         />
         <v-date-picker
           v-if="form.apartment != ''"
-          v-model="form.dates"
+          v-model="pickerDates"
           :min="new Date().toISOString().substr(0, 10)"
           :max="setMaxDate"
           :allowed-dates="allowedDates"
-          multiple
+          range
+          @change="orderDates"
         />
+        <v-text-field v-model="pickerDates[0]" label="Start" readonly />
+        <v-text-field v-model="pickerDates[1]" label="End" readonly />
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -83,6 +86,7 @@ export default {
       'Apartment #2': [],
       'Apartment #3': [],
     },
+    pickerDates: [],
   }),
 
   computed: {
@@ -110,6 +114,7 @@ export default {
 
   methods: {
     submitReservation() {
+      this.fillDates()
       const userForm = this.form
       userForm.name = userForm.first.concat(' ', userForm.last)
       userForm.created = new Date().toDateString()
@@ -136,13 +141,25 @@ export default {
     },
 
     orderDates() {
-      const splitDates = this.form.dates.map((x) => x.split('-'))
-      const first = splitDates[0]
-      const second = splitDates[1]
+      const [first, second] = this.pickerDates.map((x) => x.split('-'))
       const firstUTC = Date.UTC(first[0], first[1], first[2])
       const secondUTC = Date.UTC(second[0], second[1], second[2])
       if (secondUTC < firstUTC) {
-        this.form.dates.reverse()
+        this.pickerDates.reverse()
+      }
+    },
+
+    fillDates() {
+      const endISO = this.pickerDates[1]
+      let dateISO = this.pickerDates[0]
+      let start = dateISO.split('-')
+      start = start.map((x) => parseInt(x))
+      const [y, m, d] = [start[0], start[1] - 1, start[2]]
+      let cntr = 0
+      while (dateISO !== endISO) {
+        dateISO = new Date(y, m, d + cntr).toISOString().substr(0, 10)
+        this.form.dates.push(dateISO)
+        cntr++
       }
     },
   },
