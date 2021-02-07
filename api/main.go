@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/ajagnic/apartment-site/db"
-	_ "github.com/ajagnic/apartment-site/email"
+	"github.com/ajagnic/apartment-site/email"
 	"github.com/ajagnic/apartment-site/server"
 )
 
@@ -13,6 +13,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v\n", err)
 	}
+
+	go email.Process()
 
 	err = server.Run()
 	if err != nil {
