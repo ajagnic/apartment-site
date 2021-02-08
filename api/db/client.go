@@ -80,21 +80,20 @@ func SetBoolean(id, field string, val bool) (err error) {
 }
 
 // Insert stores a record (as db.Reservation).
-func Insert(request []byte) (string, string, error) {
+func Insert(request []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	var record Reservation
 	err := json.Unmarshal(request, &record)
 	if err != nil {
-		return "", "", err
+		return err
 	}
 	coll := dbm.Collection(table)
-	res, err := coll.InsertOne(ctx, record)
+	_, err = coll.InsertOne(ctx, record)
 	if err != nil {
-		return "", "", err
+		return err
 	}
-	id := res.InsertedID.(primitive.ObjectID).Hex()
-	return id, record.Email, nil
+	return nil
 }
 
 // CollectDates returns a serialized map of all reserved dates per apartment.
@@ -115,6 +114,24 @@ func CollectDates() ([]byte, error) {
 	dates := sliceDates(results)
 	b, err := json.Marshal(dates)
 	return b, err
+}
+
+// ReservationsToConfirm returns records (as db.Confirmation) that have not been emailed.
+func ReservationsToConfirm() ([]Confirmation, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	coll := dbm.Collection(table)
+	filter := bson.D{{Key: "emailed", Value: false}}
+	opts := options.Find().SetProjection(bson.M{"_id": 1, "email": 1})
+	cur, err := coll.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	var confirmations []Confirmation
+	if err = cur.All(ctx, &confirmations); err != nil {
+		return nil, err
+	}
+	return confirmations, nil
 }
 
 func sliceDates(recs []Result) map[string][]string {

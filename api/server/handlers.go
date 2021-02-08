@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/ajagnic/apartment-site/db"
-	"github.com/ajagnic/apartment-site/email"
 )
 
 func confirmationHandler(w http.ResponseWriter, r *http.Request) {
@@ -56,14 +55,9 @@ func reservationHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not read request body.", http.StatusBadRequest)
 			return
 		}
-		id, addr, err := db.Insert(b)
+		err = db.Insert(b)
 		if err != nil {
 			http.Error(w, "Error saving new record.", http.StatusInternalServerError)
-			return
-		}
-		err = email.SendConfirmation(id, addr)
-		if err != nil {
-			http.Error(w, "Could not send confirmation email.", http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusAccepted)
