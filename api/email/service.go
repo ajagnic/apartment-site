@@ -1,3 +1,4 @@
+// Package email sends parsed HTML to recipients from the database.
 package email
 
 import (
@@ -29,6 +30,7 @@ func init() {
 	auth = smtp.PlainAuth("", from, pw, host)
 }
 
+// Process runs indefinitely, querying db records and emailing confirmations. (blocking)
 func Process() {
 	minutes, err := strconv.Atoi(timeout)
 	if err != nil {
@@ -40,14 +42,16 @@ func Process() {
 		confs, err := db.ReservationsToConfirm()
 		if err != nil {
 			log.Println(err)
-		}
-		for _, c := range confs {
-			id := c.ID.Hex()
-			err = sendConfirmation(id, c.Email)
-			if err != nil {
-				log.Printf("Error sending email for: %v:%v\n", id, c.Email)
+		} else {
+			for _, c := range confs {
+				id := c.ID.Hex()
+				err = sendConfirmation(id, c.Email)
+				if err != nil {
+					log.Printf("Error sending email for: %v:%v\n", id, c.Email)
+				} else {
+					db.SetBoolean(id, "emailed", true)
+				}
 			}
-			db.SetBoolean(id, "emailed", true)
 		}
 	}
 }

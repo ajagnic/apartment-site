@@ -116,6 +116,7 @@ func CollectDates() ([]byte, error) {
 	return b, err
 }
 
+// ReservationsToConfirm returns records (as db.Confirmation) that have not been emailed.
 func ReservationsToConfirm() ([]Confirmation, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

@@ -22,6 +22,7 @@ type Result struct {
 	Apartment string
 }
 
+// Confirmation contains the user email for a record id, used by ReservationsToConfirm.
 type Confirmation struct {
 	ID    primitive.ObjectID `bson:"_id"`
 	Email string
